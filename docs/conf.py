@@ -21,7 +21,7 @@ sys.path.insert(0, str(schemacode_path))
 
 # -- Project information -----------------------------------------------------
 
-project = 'schemacode'
+project = 'bidsschematools'
 copyright = '2022, bids-specification'
 author = 'bids-specification'
 
