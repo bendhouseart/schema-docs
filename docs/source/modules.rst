@@ -1,7 +1,7 @@
-schemacode
-==========
+bidsschematools
+===============
 
 .. toctree::
     :maxdepth: 4
 
-    schemacode
+    bidsschematools

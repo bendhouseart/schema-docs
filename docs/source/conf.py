@@ -14,9 +14,9 @@ import os
 import sys
 import pathlib
 
-schemacode_path = pathlib.Path(os.path.abspath('../../schemacode/bidsschematools'))
+schemacode_path = pathlib.Path(os.path.abspath('bidsschematools'))
 sys.path.insert(0, str(schemacode_path))
-sys.path.insert(0, os.path.abspath('.'))
+#sys.path.insert(0, os.path.abspath('.'))
 
 
 # -- Project information -----------------------------------------------------
