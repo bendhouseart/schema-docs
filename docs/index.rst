@@ -1,5 +1,5 @@
 Welcome to bidsschematools's documentation!
-======================================
+===========================================
 
 .. toctree::
    modules
