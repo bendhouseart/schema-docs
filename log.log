@@ -1,0 +1,162 @@
+diff --git a/bidsschematools/data/schema/meta/context.yaml b/bidsschematools/data/schema/meta/context.yaml
+index 0cc8c26..d88ba7f 100644
+--- a/bidsschematools/data/schema/meta/context.yaml
++++ b/bidsschematools/data/schema/meta/context.yaml
+@@ -215,6 +215,19 @@ context:
+     json:
+       description: 'Contents of the current JSON file'
+       type: object
++    gzip:
++      description: 'Parsed contents of gzip header'
++      type: object
++      properties:
++        timestamp:
++          description: 'Modification time, unix timestamp'
++          type: number
++        filename:
++          description: 'File name'
++          type: string
++        comment:
++          description: 'Comment'
++          type: string
+     nifti_header:
+       name: 'NIfTI Header'
+       description: 'Parsed contents of NIfTI header referenced elsewhere in schema.'
+diff --git a/bidsschematools/data/schema/objects/datatypes.yaml b/bidsschematools/data/schema/objects/datatypes.yaml
+index af82185..bbb1197 100644
+--- a/bidsschematools/data/schema/objects/datatypes.yaml
++++ b/bidsschematools/data/schema/objects/datatypes.yaml
+@@ -1,6 +1,6 @@
+ ---
+ # This file defines valid BIDS datatypes, along with their full names and descriptions.
+-# For rules regarding how suffixes relate to datatypes, see files in `rules/datatypes/`.
++# For rules regarding how suffixes relate to datatypes, see files in `rules/files/raw/`.
+ anat:
+   value: anat
+   display_name: Anatomical Magnetic Resonance Imaging
+diff --git a/bidsschematools/data/schema/objects/metadata.yaml b/bidsschematools/data/schema/objects/metadata.yaml
+index 4e9466e..56ca9ae 100644
+--- a/bidsschematools/data/schema/objects/metadata.yaml
++++ b/bidsschematools/data/schema/objects/metadata.yaml
+@@ -3180,8 +3180,8 @@ TaskName:
+     No two tasks should have the same name.
+     The task label included in the file name is derived from this `"TaskName"` field
+     by removing all non-alphanumeric characters (that is, all except those matching `[0-9a-zA-Z]`).
+-    For example `"TaskName"` `"faces n-back"` will correspond to task label
+-    `facesnback`.
++    For example `"TaskName"` `"faces n-back"` or `"head nodding" will correspond to task labels
++    `facesnback` and `headnodding`, respectively.
+   type: string
+ TermURL:
+   name: TermURL
+diff --git a/bidsschematools/data/schema/objects/suffixes.yaml b/bidsschematools/data/schema/objects/suffixes.yaml
+index 9e5a41b..fa40af5 100644
+--- a/bidsschematools/data/schema/objects/suffixes.yaml
++++ b/bidsschematools/data/schema/objects/suffixes.yaml
+@@ -1,6 +1,6 @@
+ ---
+ # This file defines valid BIDS file suffixes.
+-# For rules regarding how suffixes relate to datatypes, see files in `rules/datatypes/`.
++# For rules regarding how suffixes relate to datatypes, see files in `rules/files/raw/`.
+ TwoPE:
+   value: 2PE
+   display_name: 2-photon excitation microscopy
+diff --git a/bidsschematools/data/schema/rules/files/raw/anat.yaml b/bidsschematools/data/schema/rules/files/raw/anat.yaml
+index df15bd6..54edacc 100644
+--- a/bidsschematools/data/schema/rules/files/raw/anat.yaml
++++ b/bidsschematools/data/schema/rules/files/raw/anat.yaml
+@@ -22,6 +22,7 @@ nonparametric:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -56,6 +57,7 @@ parametric:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -73,6 +75,7 @@ defacemask:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -92,6 +95,7 @@ multiecho:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -111,6 +115,7 @@ multiflip:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -131,6 +136,7 @@ multiinversion:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -150,6 +156,7 @@ mp2rage:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -172,6 +179,7 @@ vfamt:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+@@ -193,6 +201,7 @@ mtr:
+   entities:
+     subject: required
+     session: optional
++    task: optional
+     acquisition: optional
+     ceagent: optional
+     reconstruction: optional
+diff --git a/bidsschematools/data/schema/rules/sidecars/anat.yaml b/bidsschematools/data/schema/rules/sidecars/anat.yaml
+index 61958ef..0bd1527 100644
+--- a/bidsschematools/data/schema/rules/sidecars/anat.yaml
++++ b/bidsschematools/data/schema/rules/sidecars/anat.yaml
+@@ -31,3 +31,18 @@ PhaseSuffixUnits:
+     - suffix == "phase"
+   fields:
+     Units: required
++
++TaskMetadata:
++  selectors:
++    - datatype == "anat"
++    - entity.task != null
++  fields:
++    TaskName:
++      level: recommended
++      level_addendum: if `task` entity is present
++    TaskDescription:
++      level: recommended
++      level_addendum: if `task` entity is present
++    Instructions:
++      level: recommended
++      level_addendum: if `task` entity is present
